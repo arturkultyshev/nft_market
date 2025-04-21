@@ -328,11 +328,6 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "recipient",
-          "type": "address"
-        },
-        {
           "internalType": "string",
           "name": "uri",
           "type": "string"

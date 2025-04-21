@@ -10,11 +10,11 @@ contract NFTCollection is ERC721Enumerable, Ownable {
 
     constructor() ERC721("NFTCollection", "NFTC") Ownable(msg.sender) {}
 
-    function mintNFT(address recipient, string memory uri) external onlyOwner returns (uint256) {
+    function mintNFT(string memory uri) external returns (uint256) {
         _tokenIds += 1;
         uint256 newItemId = _tokenIds;
 
-        _safeMint(recipient, newItemId);
+        _safeMint(msg.sender, newItemId);
         _tokenURIs[newItemId] = uri;
 
         return newItemId;
