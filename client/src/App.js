@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import './App.css';
 import { mintNFT } from "./mint";
 import { uploadToIPFS } from "./ipfs";
 import { getUserNFTs } from "./getUserNFTs";
@@ -55,7 +56,8 @@ function App() {
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 20, marginTop: 20 }}>
         {nfts.map((nft, i) => (
-          <div key={i} style={{ border: "1px solid #ccc", padding: 10, width: 250 }}>
+         // <div key={i} style={{ border: "1px solid #ccc", padding: 10, width: 250 }}>
+            <div key={i} className="nft-card">
             <img src={nft.image} alt={nft.name} style={{ width: "100%" }} />
             <h3>{nft.name}</h3>
             <p>{nft.description}</p>
