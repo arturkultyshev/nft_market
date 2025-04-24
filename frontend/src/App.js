@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import Navbar from "./components/Navbar";
 import MintNFT from "./components/MintNFT";
 import Marketplace from "./components/Marketplace";
 import Profile from "./components/Profile";
@@ -10,10 +9,9 @@ function App() {
   const [walletAddress, setWalletAddress] = useState(null);
   const [signer, setSigner] = useState(null);
   const [refreshProfile, setRefreshProfile] = useState(false);
-  
-  const triggerProfileRefresh = () => {
-    setRefreshProfile((prev) => !prev);
-  };
+  const [activeTab, setActiveTab] = useState("marketplace");
+
+  const triggerProfileRefresh = () => setRefreshProfile((prev) => !prev);
 
   const connectWallet = async () => {
     if (!window.ethereum) {
@@ -37,19 +35,45 @@ function App() {
     connectWallet();
   }, []);
 
+  const renderTab = () => {
+    if (!signer) {
+      return <p style={{ marginTop: "2rem" }}>Connect your wallet to begin using the NFT Marketplace.</p>;
+    }
+
+    switch (activeTab) {
+      case "mint":
+        return <MintNFT signer={signer} onMinted={triggerProfileRefresh} />;
+      case "profile":
+        return <Profile signer={signer} refreshTrigger={refreshProfile} />;
+      default:
+        return <Marketplace signer={signer} />;
+    }
+  };
+
   return (
-    <div>
-      <Navbar walletAddress={walletAddress} connectWallet={connectWallet} />
-      <div className="container">
-        {signer ? (
-          <>
-            <MintNFT signer={signer} onMinted={triggerProfileRefresh}/>
-            <Marketplace signer={signer} />
-            <Profile signer={signer} onMinted={triggerProfileRefresh}/>
-          </>
-        ) : (
-          <p style={{ marginTop: "2rem" }}>Connect your wallet to begin using the NFT Marketplace.</p>
-        )}
+    <div className="app">
+      <header className="header">
+        <div className="title">
+          🛒 NFT Market
+        </div>
+        <div className="wallet-address">
+          {walletAddress ? (
+            <span>{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</span>
+          ) : (
+            <button onClick={connectWallet} className="connect-btn">Connect Wallet</button>
+          )}
+        </div>
+      </header>
+
+      <div className="main">
+        <aside className="sidebar">
+          <button className="tab-btn" onClick={() => setActiveTab("marketplace")}>Marketplace Listing</button>
+          <button className="tab-btn" onClick={() => setActiveTab("mint")}>Mint NFT</button>
+          <button className="tab-btn" onClick={() => setActiveTab("profile")}>Your NFTs</button>
+        </aside>
+        <section className="content">
+          {renderTab()}
+        </section>
       </div>
     </div>
   );

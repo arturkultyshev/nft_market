@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { NFT_COLLECTION_ADDRESS } from "../config";
+import { useState, useEffect } from "react";
+import { ethers, parseEther } from "ethers";
+import { NFT_COLLECTION_ADDRESS, MARKETPLACE_ADDRESS } from "../config";
 import NFTCollectionABI from "../abi/NFTCollection.json";
-import { ethers } from "ethers";
+import NFTMarketplaceABI from "../abi/NFTMarketplace.json";
 import "../App.css";
 
 export default function Profile({ signer, refreshTrigger }) {
@@ -23,14 +24,62 @@ export default function Profile({ signer, refreshTrigger }) {
       for (let i = 0; i < balance; i++) {
         const tokenId = await contract.tokenOfOwnerByIndex(user, i);
         const uri = await contract.tokenURI(tokenId);
-        nftList.push({ tokenId: tokenId.toString(), uri });
+        const response = await fetch(uri);
+        const metadata = await response.json();
+
+        nftList.push({
+          tokenId: tokenId.toString(),
+          image: metadata.image,
+          name: metadata.name,
+          description: metadata.description,
+        });
       }
 
-      setOwned(nftList);
+      setOwned(nftList.reverse());
     } catch (e) {
       console.error("Error loading NFTs", e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGift = async (tokenId) => {
+    const recipient = prompt("Enter the recipient's wallet address:");
+    if (!recipient) return;
+
+    try {
+      const contract = new ethers.Contract(NFT_COLLECTION_ADDRESS, NFTCollectionABI.abi, signer);
+      const sender = await signer.getAddress();
+      const tx = await contract.transferFrom(sender, recipient, tokenId);
+      await tx.wait();
+      alert(`NFT #${tokenId} gifted successfully!`);
+      getOwnedNFTs(); // обновление после отправки
+    } catch (err) {
+      console.error("Error gifting NFT:", err);
+      alert("Failed to gift NFT.");
+    }
+  };
+
+  const handleSell = async (tokenId) => {
+    const priceInEth = prompt("Enter the sale price in ETH:");
+    if (!priceInEth) return;
+
+    try {
+      const nftContract = new ethers.Contract(NFT_COLLECTION_ADDRESS, NFTCollectionABI.abi, signer);
+      const marketplace = new ethers.Contract(MARKETPLACE_ADDRESS, NFTMarketplaceABI.abi, signer);
+
+      // Одобрение NFT на маркетплейс
+      const approvalTx = await nftContract.approve(MARKETPLACE_ADDRESS, tokenId);
+      await approvalTx.wait();
+
+      const priceInWei = parseEther(priceInEth);
+      const tx = await marketplace.listItem(NFT_COLLECTION_ADDRESS, tokenId, priceInWei);
+      await tx.wait();
+
+      alert(`NFT #${tokenId} listed for sale at ${priceInEth} ETH!`);
+    } catch (err) {
+      console.error("Error listing NFT:", err);
+      alert("Failed to list NFT.");
     }
   };
 
@@ -42,16 +91,20 @@ export default function Profile({ signer, refreshTrigger }) {
       ) : owned.length === 0 ? (
         <p>You don't own any NFTs yet.</p>
       ) : (
-        <ul className="nft-list">
+        <div className="nft-grid">
           {owned.map((nft) => (
-            <li key={nft.tokenId} className="nft-item">
-              <strong>ID:</strong> {nft.tokenId} <br />
-              <a href={nft.uri} target="_blank" rel="noreferrer">
-                View Metadata
-              </a>
-            </li>
+            <div key={nft.tokenId} className="nft-card">
+              <img src={nft.image} alt={nft.name} className="nft-image" />
+              <h3>{nft.name || `NFT #${nft.tokenId}`}</h3>
+              <p>{nft.description}</p>
+              <p className="token-id">ID: {nft.tokenId}</p>
+              <div className="button-group">
+                <button className="gift-btn" onClick={() => handleGift(nft.tokenId)}>Gift</button>
+                <button className="sell-btn" onClick={() => handleSell(nft.tokenId)}>Sell</button>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

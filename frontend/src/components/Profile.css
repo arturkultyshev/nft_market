@@ -1,0 +1,33 @@
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .sell-btn {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  
+  .gift-btn {
+    background-color: #6ab04c;
+    color: white;
+  }
+  
+  .gift-btn:hover {
+    background-color: #4e9b3e;
+  }
+  
+  .sell-btn {
+    background-color: #f0932b;
+    color: white;
+  }
+  
+  .sell-btn:hover {
+    background-color: #d97904;
+  }
+  
