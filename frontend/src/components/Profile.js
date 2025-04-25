@@ -23,7 +23,12 @@ export default function Profile({ signer, refreshTrigger }) {
       for (let i = 0; i < balance; i++) {
         const tokenId = await contract.tokenOfOwnerByIndex(user, i);
         const uri = await contract.tokenURI(tokenId);
-        nftList.push({ tokenId: tokenId.toString(), uri });
+        const metadata = await fetch(uri).then((res) => res.json());
+        let image = metadata.image;
+            if (image.startsWith("ipfs://")) {
+              image = image.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
+            }
+        nftList.push({ tokenId: tokenId.toString(), uri, image });
       }
 
       setOwned(nftList);
@@ -44,12 +49,12 @@ export default function Profile({ signer, refreshTrigger }) {
       ) : (
         <ul className="nft-list">
           {owned.map((nft) => (
-            <li key={nft.tokenId} className="nft-item">
-              <strong>ID:</strong> {nft.tokenId} <br />
-              <a href={nft.uri} target="_blank" rel="noreferrer">
-                View Metadata
-              </a>
-            </li>
+            <div key={nft.tokenId} className="marketplace-card">
+            <img src={nft.image} alt={nft.name} className="nft-item" />
+            <p><strong>{nft.name}</strong></p>
+            <p>{nft.description}</p>
+            <p><strong>ID:</strong> {nft.tokenId}</p>
+          </div>
           ))}
         </ul>
       )}

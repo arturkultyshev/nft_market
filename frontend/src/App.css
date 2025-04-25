@@ -1,7 +1,23 @@
 body {
   margin: 0;
-  font-family: sans-serif;
-  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(-45deg, #000000, #00008b, #4b0082, #000000);
+  background-size: 400% 400%;
+  animation: gradientBG 20s ease infinite;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .container {
@@ -12,55 +28,80 @@ body {
 
 .navbar {
   padding: 1rem 2rem;
-  background-color: #222;
+  background-color: rgba(34, 34, 34, 0.9);
   color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 
 .logo {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: bold;
+  letter-spacing: 1px;
+  animation: logoPop 1.5s ease;
+}
+
+@keyframes logoPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .connect-button {
   background-color: #4caf50;
   color: #fff;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.connect-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 15px #4caf50;
 }
 
 .address-badge {
   background-color: #333;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-family: monospace;
 }
 
 .mint-input {
   width: 400px;
-  padding: 8px;
+  padding: 10px;
   margin-right: 10px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  color: white;
 }
 
 .mint-section {
   margin-bottom: 2rem;
+  animation: fadeIn 1s ease;
 }
 
 .mint-button {
-  padding: 8px 16px;
+  padding: 10px 20px;
   font-weight: bold;
   background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.mint-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 15px #4caf50;
+}
 
-/*marketplace*/
 .marketplace-section {
   margin-top: 3rem;
 }
@@ -69,7 +110,26 @@ body {
   border: 1px solid #ccc;
   padding: 1rem;
   margin: 1rem 0;
-  border-radius: 8px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.8s ease;
+}
+
+.marketplace-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .nft-thumbnail {
@@ -80,25 +140,36 @@ body {
   margin-bottom: 10px;
 }
 
-
 .buy-button {
   margin-top: 0.5rem;
-  padding: 6px 12px;
+  padding: 8px 16px;
   background-color: #2196f3;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.buy-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 15px #2196f3;
 }
 
 .section-heading {
   margin-top: 2rem;
+  font-size: 1.6rem;
+  animation: fadeIn 1.5s ease;
 }
 
 .input-field {
-  padding: 5px;
+  padding: 8px;
   margin-right: 10px;
-  width: 180px;
+  width: 200px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: rgba(255,255,255,0.05);
+  color: white;
 }
 
 .profile-section {
@@ -112,4 +183,367 @@ body {
 
 .nft-item {
   margin-bottom: 1rem;
+}
+
+.nft-card {
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 250px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nft-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #ccc;
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  color: white;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: rgba(26, 26, 26, 0.95);
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.4);
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.tab:hover {
+  transform: translateX(8px);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tab.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  animation: fadeIn 1s ease;
+}
+
+.tab-content {
+  margin-top: 1rem;
+}
+
+/* Extra animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.nft-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.nft-card {
+  background: white;
+  background: linear-gradient(-45deg, #000000, #00008b, #4b0082, #000000);
+  background-size: 400% 400%;
+  animation: gradientBG 20s ease infinite;
+  color: white;
+  transition: all 0.3s ease;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.nft-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e1e2f;
+  padding: 1rem 2rem;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.wallet-address {
+  background-color: #292940;
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.connect-btn {
+  background-color: #3f51b5;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.main {
+  display: flex;
+  height: calc(100vh - 80px);
+}
+
+.sidebar {
+  width: 220px;
+  background: rgba(30, 30, 48, 0.9);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.2);
+}
+
+.tab-btn {
+  background-color: #2f2f48;
+  color: #fff;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.tab-btn:hover {
+  background-color: #45456a;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: #00008b;
+  background: linear-gradient(-45deg, #000000, #00008b, #4b0082, #000000);
+  background-size: 400% 400%;
+  animation: gradientBG 20s ease infinite;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.nft-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.nft-item {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: none; /* Убираем белый фон */
+  background-color: #00008b;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  word-break: break-word;
+  text-align: left;
+  color: #333;
+  height: 300px; /* или любое другое значение */
+  width: 93%;
+  object-fit: contain; /* или cover — зависит от желаемого результата */
+}
+
+.nft-item a {
+  color: #3f51b5;
+  text-decoration: underline;
+  word-break: break-all;
+  width: auto;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.gift-btn,
+.sell-btn {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.gift-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.sell-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Add these to your existing CSS */
+.filters-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.search-field {
+  flex: 1;
+}
+
+.sort-select {
+  padding: 10px 20px;
+    font-weight: bold;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.nft-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.marketplace-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.marketplace-card:hover {
+  transform: translateY(-5px);
+}
+
+.nft-thumbnail {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.nft-details {
+  padding: 1rem;
+}
+
+.nft-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.price {
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.page-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+}
+
+.page-button.active {
+  background: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
+.page-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #fde8e8;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #d32f2f;
+}
+
+.loading, .no-results {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+}
+
+.nft-thumbnail {
+  background-color: #f5f5f5;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.page-button,
+.page-number {
+  padding: 0.5rem 0.9rem;
+  border: none;
+  background-color: #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.page-button:hover,
+.page-number:hover {
+  background-color: #cbd5e0;
+  transform: scale(1.05);
+}
+
+.page-number.active {
+  background-color: #4a90e2;
+  color: white;
+  font-weight: bold;
 }

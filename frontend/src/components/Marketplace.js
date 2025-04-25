@@ -113,7 +113,7 @@ export default function Marketplace({ signer }) {
       ) : (
         listedNFTs.map((nft) => (
           <div key={nft.tokenId} className="marketplace-card">
-            <img src={nft.image} alt={nft.name} className="nft-thumbnail" />
+            <img src={nft.image} alt={nft.name} className="nft-item" />
             <p><strong>{nft.name}</strong></p>
             <p>{nft.description}</p>
             <p><strong>ID:</strong> {nft.tokenId}</p>
