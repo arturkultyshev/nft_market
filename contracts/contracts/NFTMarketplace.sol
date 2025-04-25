@@ -18,6 +18,7 @@ contract NFTMarketplace is Ownable {
     event NFTListed(uint256 indexed tokenId, address indexed seller, uint256 price);
     event NFTSold(uint256 indexed tokenId, address indexed buyer, uint256 price);
     event NFTUnlisted(uint256 indexed tokenId);
+    event NFTGifted(uint256 indexed tokenId, address indexed from, address indexed to);
 
     constructor(address _nftCollection) Ownable(msg.sender) {
         nftCollection = IERC721(_nftCollection);
@@ -49,6 +50,20 @@ contract NFTMarketplace is Ownable {
 
         nftCollection.safeTransferFrom(listing.seller, msg.sender, tokenId);
         emit NFTSold(tokenId, msg.sender, listing.price);
+    }
+
+    function giftNFT(uint256 tokenId, address to) external {
+        require(to != address(0), "Cannot gift to zero address");
+        require(nftCollection.ownerOf(tokenId) == msg.sender, "Not the NFT owner");
+        require(to != msg.sender, "Cannot gift to yourself");
+
+        if (listings[tokenId].active) {
+            listings[tokenId].active = false;
+            emit NFTUnlisted(tokenId);
+        }
+
+        nftCollection.safeTransferFrom(msg.sender, to, tokenId);
+        emit NFTGifted(tokenId, msg.sender, to);
     }
 
     function unlistNFT(uint256 tokenId) external {
