@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { NFT_COLLECTION_ADDRESS, MARKETPLACE_ADDRESS } from "../config";
 import NFTCollectionABI from "../abi/NFTCollection.json";
@@ -18,57 +18,62 @@ export default function Marketplace({ signer }) {
   const [sortOption, setSortOption] = useState("price-asc");
   const [error, setError] = useState(null);
 
-  const nftContract = new ethers.Contract(NFT_COLLECTION_ADDRESS, NFTCollectionABI.abi, signer);
-  const marketplace = new ethers.Contract(MARKETPLACE_ADDRESS, NFTMarketplaceABI.abi, signer);
-
-  const loadListings = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const all = [];
-      const listingCount = await marketplace.listingCount();
-
-      for (let i = 1; i <= listingCount; i++) {
-        try {
-          const listing = await marketplace.listings(i);
-          if (listing.active) {
-            const uri = await nftContract.tokenURI(i);
-            const response = await fetch(uri);
-            if (!response.ok) throw new Error(`Failed to fetch metadata for token ${i}`);
-            const metadata = await response.json();
-            let image = metadata.image;
-            if (image?.startsWith("ipfs://")) {
-              image = image.replace("ipfs://", "https://ipfs.io/ipfs/");
-            }
-
-            all.push({
-              tokenId: i,
-              price: ethers.formatEther(listing.price),
-              seller: listing.seller,
-              uri,
-              priceWei: listing.price,
-              image,
-              name: metadata.name || `NFT #${i}`,
-              description: metadata.description || ""
-            });
-          }
-        } catch (err) {
-          console.error(`Error loading NFT ${i}:`, err);
-        }
-      }
-
-      setListedNFTs(all);
-    } catch (err) {
-      console.error("Failed to load listings:", err);
-      setError("Failed to load listings. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  }, [marketplace, nftContract]);
-
   useEffect(() => {
-    loadListings();
-  }, [loadListings]);
+    const loadListings = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const nftContract = new ethers.Contract(NFT_COLLECTION_ADDRESS, NFTCollectionABI.abi, signer);
+        const marketplace = new ethers.Contract(MARKETPLACE_ADDRESS, NFTMarketplaceABI.abi, signer);
+
+        const all = [];
+        const listingCount = await marketplace.listingCount;
+
+        for (let i = 1; i <= listingCount; i++) {
+          try {
+            const listing = await marketplace.listings(i);
+            if (listing.active) {
+              const tokenId = Number(listing.tokenId);
+              const uri = await nftContract.tokenURI(tokenId);
+              const response = await fetch(uri);
+              if (!response.ok) throw new Error(`Failed to fetch metadata for token ${tokenId}`);
+              const metadata = await response.json();
+
+              let image = metadata.image;
+              if (image?.startsWith("ipfs://")) {
+                image = image.replace("ipfs://", "https://ipfs.io/ipfs/");
+              }
+
+              all.push({
+                tokenId,
+                price: ethers.formatEther(listing.price),
+                seller: listing.seller,
+                uri,
+                priceWei: listing.price,
+                image,
+                name: metadata.name || `NFT #${tokenId}`,
+                description: metadata.description || ""
+              });
+            }
+          } catch (err) {
+            console.error(`Error loading listing ${i}:`, err);
+          }
+        }
+
+        setListedNFTs(all);
+      } catch (err) {
+        console.error("Failed to load listings:", err);
+        setError("Failed to load listings. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (signer) {
+      loadListings();
+    }
+  }, [signer]);
 
   useEffect(() => {
     let filtered = [...listedNFTs];
@@ -102,6 +107,9 @@ export default function Marketplace({ signer }) {
       setLoading(true);
       setError(null);
 
+      const nftContract = new ethers.Contract(NFT_COLLECTION_ADDRESS, NFTCollectionABI.abi, signer);
+      const marketplace = new ethers.Contract(MARKETPLACE_ADDRESS, NFTMarketplaceABI.abi, signer);
+
       const isApproved = await nftContract.isApprovedForAll(await signer.getAddress(), MARKETPLACE_ADDRESS);
       if (!isApproved) {
         const approvalTx = await nftContract.setApprovalForAll(MARKETPLACE_ADDRESS, true);
@@ -113,7 +121,10 @@ export default function Marketplace({ signer }) {
 
       setTokenId("");
       setPrice("");
-      await loadListings();
+
+      const event = new Event("reload-listings");
+      window.dispatchEvent(event);
+
       alert("NFT successfully listed for sale!");
     } catch (err) {
       console.error("Listing failed:", err);
@@ -127,9 +138,15 @@ export default function Marketplace({ signer }) {
     try {
       setLoading(true);
       setError(null);
+
+      const marketplace = new ethers.Contract(MARKETPLACE_ADDRESS, NFTMarketplaceABI.abi, signer);
+
       const tx = await marketplace.buyNFT(tokenId, { value: priceWei });
       await tx.wait();
-      await loadListings();
+
+      const event = new Event("reload-listings");
+      window.dispatchEvent(event);
+
       alert("NFT successfully purchased!");
     } catch (err) {
       console.error("Purchase failed:", err);
@@ -138,6 +155,12 @@ export default function Marketplace({ signer }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const handler = () => window.location.reload();
+    window.addEventListener("reload-listings", handler);
+    return () => window.removeEventListener("reload-listings", handler);
+  }, []);
 
   const totalPages = Math.ceil(filteredNFTs.length / ITEMS_PER_PAGE);
   const currentNFTs = filteredNFTs.slice(
