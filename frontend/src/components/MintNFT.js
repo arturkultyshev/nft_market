@@ -62,13 +62,10 @@ export default function MintNFT({ signer, onMinted }) {
     setMinting(true);
 
     try {
-      // 1. Upload image to Pinata
       const imageUrl = await uploadToPinata(file);
-      console.log("🖼️ Uploaded image:", imageUrl);
-
-      // 2. Upload metadata.json with image link
+      console.log("Uploaded image:", imageUrl);
       const tokenURI = await uploadMetadata(imageUrl);
-      console.log("📝 Uploaded metadata:", tokenURI);
+      console.log("Uploaded metadata:", tokenURI);
 
       // 3. Mint NFT
       const contract = new ethers.Contract(NFT_COLLECTION_ADDRESS, NFTCollectionABI.abi, signer);
@@ -76,11 +73,11 @@ export default function MintNFT({ signer, onMinted }) {
       const tx = await contract.mintNFT(tokenURI);
       await tx.wait();
 
-      alert("✅ NFT Minted!");
+      alert("NFT Minted!");
       setFile(null);
       if (onMinted) onMinted();
     } catch (err) {
-      console.error("❌ Mint failed:", err);
+      console.error("Mint failed:", err);
       alert("Mint failed");
     } finally {
       setMinting(false);

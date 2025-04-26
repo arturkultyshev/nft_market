@@ -77,7 +77,6 @@ export default function Marketplace({ signer }) {
             });
           }
         } catch (err) {
-          // Likely token doesn't exist
         }
       }
       setListedNFTs(all);

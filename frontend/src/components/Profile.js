@@ -8,7 +8,7 @@ import "../App.css";
 export default function Profile({ signer, refreshTrigger }) {
   const [owned, setOwned] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [giftAddress, setGiftAddress] = useState({}); // Новое: хранение адресов для каждого токена
+  const [giftAddress, setGiftAddress] = useState({});
 
   useEffect(() => {
     getOwnedNFTs();
@@ -51,21 +51,17 @@ export default function Profile({ signer, refreshTrigger }) {
         alert("Please enter a valid address");
         return;
       }
-  
-      // 1. Проверяем, есть ли уже апрув
       const approvedAddress = await nftContract.getApproved(tokenId);
       if (approvedAddress.toLowerCase() !== MARKETPLACE_ADDRESS.toLowerCase()) {
         const approveTx = await nftContract.approve(MARKETPLACE_ADDRESS, tokenId);
         await approveTx.wait();
         console.log(`Approved NFT #${tokenId} for market`);
       }
-  
-      // 2. Теперь дарим
       const giftTx = await marketContract.giftNFT(tokenId, toAddress);
       await giftTx.wait();
       alert(`NFT #${tokenId} gifted successfully!`);
   
-      getOwnedNFTs(); // Обновим список после дарения
+      getOwnedNFTs(); 
     } catch (e) {
       console.error("Error gifting NFT", e);
       alert("Failed to gift NFT.");
