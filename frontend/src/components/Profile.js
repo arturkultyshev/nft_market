@@ -43,21 +43,35 @@ export default function Profile({ signer, refreshTrigger }) {
 
   const handleGiftNFT = async (tokenId) => {
     try {
+      const nftContract = new ethers.Contract(NFT_COLLECTION_ADDRESS, NFTCollectionABI.abi, signer);
       const marketContract = new ethers.Contract(MARKETPLACE_ADDRESS, NFTMarketABI.abi, signer);
       const toAddress = giftAddress[tokenId];
+  
       if (!toAddress || toAddress.length !== 42) {
         alert("Please enter a valid address");
         return;
       }
-      const tx = await marketContract.giftNFT(tokenId, toAddress);
-      await tx.wait();
+  
+      // 1. Проверяем, есть ли уже апрув
+      const approvedAddress = await nftContract.getApproved(tokenId);
+      if (approvedAddress.toLowerCase() !== MARKETPLACE_ADDRESS.toLowerCase()) {
+        const approveTx = await nftContract.approve(MARKETPLACE_ADDRESS, tokenId);
+        await approveTx.wait();
+        console.log(`Approved NFT #${tokenId} for market`);
+      }
+  
+      // 2. Теперь дарим
+      const giftTx = await marketContract.giftNFT(tokenId, toAddress);
+      await giftTx.wait();
       alert(`NFT #${tokenId} gifted successfully!`);
-      getOwnedNFTs(); // Обновим список после подарка
+  
+      getOwnedNFTs(); // Обновим список после дарения
     } catch (e) {
       console.error("Error gifting NFT", e);
       alert("Failed to gift NFT.");
     }
   };
+  
   const handleApproveNFT = async (tokenId) => {
     try {
       const nftContract = new ethers.Contract(NFT_COLLECTION_ADDRESS, NFTCollectionABI.abi, signer);
@@ -97,9 +111,6 @@ export default function Profile({ signer, refreshTrigger }) {
   className="gift-input"
 />
 <div>
-  <button onClick={() => handleApproveNFT(nft.tokenId)} className="approve-button">
-    Approve
-  </button>
   <button onClick={() => handleGiftNFT(nft.tokenId)} className="gift-button">
     Gift
   </button>
