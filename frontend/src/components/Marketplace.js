@@ -86,6 +86,8 @@ export default function Marketplace({ signer }) {
     }
   };
 
+  
+
   return (
     <div className="marketplace-section">
       <h2>List NFT for Sale</h2>
